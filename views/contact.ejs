@@ -1,0 +1,91 @@
+<% include partials/header %>
+<% include partials/sidebar %>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap.min.js"></script>
+
+<div class="content-wrapper">
+    <section class="content-header" style="margin-bottom: 20px;">
+        <h1>
+          Contact
+          <small>Information</small>
+        </h1>
+        <ol class="breadcrumb">
+          <li>
+            <a href="#"><i class="fa fa-dashboard"></i> Home</a>
+          </li>
+          <li class="active">Dashboard</li>
+        </ol>
+      </section>
+  <section class="content">      
+      <!-- <center> <h1><b>Contact information</b></h1></center> -->
+      <table id="table-data" class="table table-bordered table-hover ">
+        <tr>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Notes</th>
+                    <th>Read</th>            
+            </tr>
+            </thead>
+            <% data %>
+            <% data.forEach(function(e){ %>
+            <tbody id="filter-data">
+                    <tr>
+                    <td><%=e.name %></td>
+                    <td><%=e.email %></td>
+                    <td><%=e.phone %></td>
+                    <td><%=e.notes %></td>
+                    <td>
+                        <form id="statusForm" action="/change-status/<%=e._id%>" method="POST">
+                            <button type="button" class="btn btn-success btn-raised btn-flat btn-sm" onclick="toggleStatus('<%=e._id%>', '<%=e.isRead%>')">
+                                <% if (e.isRead) { %>
+                                  <i class="fas fa-check"></i> Mark as Unread
+                                <% } else { %>
+                                  <i class="fas fa-envelope"></i> Mark as Read
+                                <% } %>
+                              </button>
+                              
+                        </form>
+                    </td>
+                    </tr>
+                
+                <% }) %>
+            </tbody>
+        </table>
+        </div>
+        </div>
+    </section>
+</div>
+
+<script>
+function toggleStatus(contactId, isRead) {
+    const updatedIsRead = isRead === 'true' ? 'false' : 'true';
+    changeStatus(contactId, updatedIsRead);
+}
+
+function changeStatus(contactId, isRead) {
+    const apiUrl = `/change-status/${contactId}`;
+    const requestBody = { isRead };
+
+    $.ajax({
+        url: apiUrl,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(requestBody),
+        success: function(response) {
+            location.reload();
+        },
+        error: function(error) {
+            console.error('There was a problem with the AJAX request:', error);
+        },
+    });
+}
+
+
+</script>
+
+<% include partials/footer %>
